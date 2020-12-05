@@ -1,11 +1,11 @@
 package br.com.dgm.cm;
 
+import br.com.dgm.cm.exception.ExplosaoException;
 import br.com.dgm.cm.model.Campo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CampoTeste {
 
@@ -85,5 +85,80 @@ public class CampoTeste {
         Campo vizinho = new Campo(1, 5);
         boolean adicionado = campo.adicionarVizinho(vizinho);
         assertFalse(adicionado);
+    }
+
+    @Test
+    void teste_valor_padra_atriburo_marcado() {
+        assertFalse(campo.isMarcado());
+    }
+
+    @Test
+    void teste_alternar_marcacao() {
+        campo.alternarMarcacao();
+        assertTrue(campo.isMarcado());
+    }
+
+    @Test
+    void teste_alternar_marcacao_duas_chamadas() {
+        campo.alternarMarcacao();
+        campo.alternarMarcacao();
+        assertFalse(campo.isMarcado());
+    }
+
+    @Test
+    void teste_abrir_nao_minado_nao_marcado() {
+        assertTrue(campo.abrir());
+    }
+
+    @Test
+    void teste_abrir_nao_minado_marcado() {
+        campo.alternarMarcacao();
+        assertFalse(campo.abrir());
+    }
+
+    @Test
+    void teste_abrir_minado_marcado() {
+        campo.minar();
+        campo.alternarMarcacao();
+        assertFalse(campo.abrir());
+    }
+
+    @Test
+    void teste_abrir_minado_nao_marcado() {
+        campo.minar();
+        assertThrows(ExplosaoException.class, () -> campo.abrir());
+    }
+
+    @Test
+    void teste_valor_padra_atriburo_aberto() {
+        assertFalse(campo.isAberto());
+    }
+
+    @Test
+    void teste_abrir_com_vizinhos_1() {
+        Campo campo11 = new Campo(1, 1);
+        Campo campo22 = new Campo(2, 2);
+        campo22.adicionarVizinho(campo11);
+
+        campo.adicionarVizinho(campo22);
+        campo.abrir();
+
+        assertTrue(campo22.isAberto() && campo11.isAberto());
+    }
+
+    @Test
+    void teste_abrir_com_vizinhos_2() {
+        Campo campo11 = new Campo(1, 1);
+        Campo campo12 = new Campo(1, 1);
+        campo12.minar();
+
+        Campo campo22 = new Campo(2, 2);
+        campo22.adicionarVizinho(campo11);
+        campo22.adicionarVizinho(campo12);
+
+        campo.adicionarVizinho(campo22);
+        campo.abrir();
+
+        assertTrue(campo22.isAberto() && campo11.isFechado());
     }
 }
