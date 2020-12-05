@@ -85,12 +85,22 @@ public class Tabuleiro {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
+        sb.append(" ");
+        for (int coluna = 0; coluna < colunas; coluna++) {
+            sb.append(" ");
+            sb.append(coluna);
+            sb.append(" ");
+        }
+
+        sb.append("\n");
+
         int index = 0;
         for (int linha = 0; linha < linhas; linha++) {
+            sb.append(linha);
             for (int coluna = 0; coluna < colunas; coluna++) {
-                sb.append("");
+                sb.append(" ");
                 sb.append(campos.get(index));
-                sb.append("");
+                sb.append(" ");
                 index++;
             }
             sb.append("\n");
