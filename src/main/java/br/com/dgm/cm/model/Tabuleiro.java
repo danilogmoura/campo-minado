@@ -1,5 +1,7 @@
 package br.com.dgm.cm.model;
 
+import br.com.dgm.cm.exception.ExplosaoException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -25,10 +27,15 @@ public class Tabuleiro {
     }
 
     public void abrir(int linha, int coluna) {
-        campos.stream()
-                .filter(campo -> campo.getLinha() == linha && campo.getColuna() == coluna)
-                .findFirst()
-                .ifPresent(campo -> campo.abrir());
+        try {
+            campos.stream()
+                    .filter(campo -> campo.getLinha() == linha && campo.getColuna() == coluna)
+                    .findFirst()
+                    .ifPresent(campo -> campo.abrir());
+        } catch (ExplosaoException exception) {
+            campos.forEach(campo -> campo.setAberto(true));
+            throw exception;
+        }
     }
 
     public void alterarMarcacao(int linha, int coluna) {
@@ -59,9 +66,9 @@ public class Tabuleiro {
         Predicate<Campo> minado = campo -> campo.isMinado();
 
         do {
-            minasArmadas = campos.stream().filter(minado).count();
             int aleatorio = (int) (Math.random() * campos.size());
             campos.get(aleatorio).minar();
+            minasArmadas = campos.stream().filter(minado).count();
         } while (minasArmadas < minas);
     }
 
